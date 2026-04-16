@@ -1,0 +1,19 @@
+{
+  "name": "Campus Lost and Found SRM AP",
+  "short_name": "Campus LF",
+  "description": "Smart Lost and Found Portal for SRM AP University",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0A0A0F",
+  "theme_color": "#6C63FF",
+  "orientation": "portrait",
+  "icons": [
+    {
+      "src": "/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    }
+  ],
+  "categories": ["utilities", "education"]
+}
