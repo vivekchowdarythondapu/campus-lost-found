@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 const API = axios.create({
-  baseURL: 'http://localhost:5000/api'
+  baseURL: 'https://campus-lost-found-ml6c.onrender.com/api'
 });
 
 API.interceptors.request.use((config) => {

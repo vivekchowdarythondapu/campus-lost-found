@@ -5,7 +5,7 @@ import { useAuth } from '../context/AuthContext';
 import { Send, MessageCircle } from 'lucide-react';
 import io from 'socket.io-client';
 
-const socket = io('http://localhost:5000');
+const socket = io('https://campus-lost-found-ml6c.onrender.com');
 
 const Chat = () => {
   const { user } = useAuth();
