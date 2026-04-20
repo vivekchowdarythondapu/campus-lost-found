@@ -36,6 +36,14 @@ const userSchema = new mongoose.Schema({
     type: String,
     default: ''
   },
+  isVerified: {
+    type: Boolean,
+    default: false
+  },
+  otp: {
+    code: String,
+    expiresAt: Date
+  },
   notifications: [
     {
       message: String,

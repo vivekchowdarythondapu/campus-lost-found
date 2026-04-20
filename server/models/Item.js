@@ -15,7 +15,7 @@ const itemSchema = new mongoose.Schema({
     enum: [
       'Electronics', 'Books', 'Clothing', 'Accessories',
       'Documents', 'Keys', 'Bags', 'Jewellery',
-      'Vehicles', 'Other'
+      'Vehicles Key', 'Other'
     ],
     required: true
   },
@@ -32,6 +32,14 @@ const itemSchema = new mongoose.Schema({
   location: {
     type: String,
     required: true
+  },
+  latitude: {
+    type: Number,
+    default: null
+  },
+  longitude: {
+    type: Number,
+    default: null
   },
   date: {
     type: Date,

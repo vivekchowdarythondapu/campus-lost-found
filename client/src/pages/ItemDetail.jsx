@@ -16,7 +16,7 @@ const ItemDetail = () => {
   const [showQR, setShowQR] = useState(false);
 
   useEffect(() => {
-    const fetch = async () => {
+    const fetchItem = async () => {
       try {
         const { data } = await API.get(`/items/${id}`);
         setItem(data);
@@ -27,7 +27,7 @@ const ItemDetail = () => {
         setLoading(false);
       }
     };
-    fetch();
+    fetchItem();
   }, [id]);
 
   if (loading) return (
@@ -35,16 +35,22 @@ const ItemDetail = () => {
       <div style={{ color: 'var(--muted)' }}>Loading...</div>
     </div>
   );
+
   if (!item) return null;
 
   const isOwner = user?._id === item.postedBy?._id;
 
-  const statusStyle = {
-    active: 'bg-blue-500/10 text-blue-400 border border-blue-500/20',
-    matched: 'bg-purple-500/10 text-purple-400 border border-purple-500/20',
-    returned: 'text-green-400 border border-green-400/20',
-    rejected: 'bg-red-500/10 text-red-400 border border-red-500/20',
-  }[item.status] || '';
+  const getStatusStyle = (status) => {
+    const styles = {
+      active: 'bg-blue-500/10 text-blue-400 border border-blue-500/20',
+      matched: 'bg-purple-500/10 text-purple-400 border border-purple-500/20',
+      returned: 'text-green-400 border border-green-400/20',
+      rejected: 'bg-red-500/10 text-red-400 border border-red-500/20',
+    };
+    return styles[status] || '';
+  };
+
+  const mapsKey = import.meta.env.VITE_GOOGLE_MAPS_KEY;
 
   return (
     <div className="min-h-screen dot-grid">
@@ -61,8 +67,8 @@ const ItemDetail = () => {
         </button>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {/* Left — Image */}
-          <div>
+
+          <div className="space-y-4">
             {item.image ? (
               <img
                 src={item.image}
@@ -73,18 +79,46 @@ const ItemDetail = () => {
             ) : (
               <div
                 className="w-full h-72 glass rounded-2xl border border-[var(--border)] flex items-center justify-center"
-                style={{ background: item.type === 'lost' ? 'rgba(255,77,109,0.05)' : 'rgba(0,214,143,0.05)' }}
+                style={{
+                  background: item.type === 'lost'
+                    ? 'rgba(255,77,109,0.05)'
+                    : 'rgba(0,214,143,0.05)'
+                }}
               >
                 <span className="text-6xl opacity-30">
                   {item.type === 'lost' ? '?' : '📦'}
                 </span>
               </div>
             )}
+
+            {item.latitude && item.longitude && mapsKey && (
+              <div className="glass rounded-2xl border border-[var(--border)] overflow-hidden">
+                <iframe
+                  title="Item Location Map"
+                  width="100%"
+                  height="200"
+                  style={{ border: 0 }}
+                  loading="lazy"
+                  allowFullScreen
+                  src={`https://www.google.com/maps/embed/v1/place?key=${mapsKey}&q=${item.latitude},${item.longitude}&zoom=17`}
+                />
+                <div className="p-3 border-t border-[var(--border)]">
+                  <a
+                    href={`https://www.google.com/maps?q=${item.latitude},${item.longitude}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex items-center gap-2 text-sm justify-center"
+                    style={{ color: 'var(--accent)' }}
+                  >
+                    <MapPin size={14} />
+                    Open in Google Maps
+                  </a>
+                </div>
+              </div>
+            )}
           </div>
 
-          {/* Right — Details */}
           <div className="space-y-5">
-            {/* Badges */}
             <div className="flex items-center gap-2 flex-wrap">
               <span className={`text-xs px-3 py-1 rounded-full font-medium ${
                 item.type === 'lost' ? 'badge-lost' : 'badge-found'
@@ -94,7 +128,7 @@ const ItemDetail = () => {
               <span className="badge-category text-xs px-3 py-1 rounded-full">
                 {item.category}
               </span>
-              <span className={`text-xs px-3 py-1 rounded-full ${statusStyle}`}>
+              <span className={`text-xs px-3 py-1 rounded-full ${getStatusStyle(item.status)}`}>
                 {item.status}
               </span>
             </div>
@@ -102,11 +136,11 @@ const ItemDetail = () => {
             <h1 className="font-display text-3xl font-bold text-white">
               {item.title}
             </h1>
+
             <p className="leading-relaxed" style={{ color: 'var(--muted)' }}>
               {item.description}
             </p>
 
-            {/* Meta info */}
             <div className="glass rounded-xl border border-[var(--border)] p-4 space-y-3">
               <div className="flex items-center gap-3 text-sm">
                 <MapPin size={15} style={{ color: 'var(--accent)' }} className="flex-shrink-0" />
@@ -118,25 +152,31 @@ const ItemDetail = () => {
                 <span style={{ color: 'var(--muted)' }}>Date:</span>
                 <span className="text-white">
                   {new Date(item.date).toLocaleDateString('en-IN', {
-                    year: 'numeric', month: 'long', day: 'numeric'
+                    year: 'numeric',
+                    month: 'long',
+                    day: 'numeric'
                   })}
                 </span>
               </div>
             </div>
 
-            {/* Posted by */}
             <div className="glass rounded-xl border border-[var(--border)] p-4">
-              <p className="text-xs uppercase tracking-wider mb-3" style={{ color: 'var(--muted)' }}>
+              <p className="text-xs uppercase tracking-wider mb-3"
+                style={{ color: 'var(--muted)' }}>
                 Posted by
               </p>
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-full flex items-center justify-center text-sm font-bold text-white"
-                  style={{ background: 'linear-gradient(135deg, var(--accent), var(--accent2))' }}>
+                <div
+                  className="w-10 h-10 rounded-full flex items-center justify-center text-sm font-bold text-white"
+                  style={{ background: 'linear-gradient(135deg, var(--accent), var(--accent2))' }}
+                >
                   {item.postedBy?.name?.charAt(0).toUpperCase()}
                 </div>
                 <div>
                   <p className="text-white font-medium">{item.postedBy?.name}</p>
-                  <p className="text-sm" style={{ color: 'var(--muted)' }}>{item.postedBy?.email}</p>
+                  <p className="text-sm" style={{ color: 'var(--muted)' }}>
+                    {item.postedBy?.email}
+                  </p>
                   {item.postedBy?.phone && (
                     <p className="text-sm" style={{ color: 'var(--muted)' }}>
                       {item.postedBy?.phone}
@@ -146,10 +186,8 @@ const ItemDetail = () => {
               </div>
             </div>
 
-            {/* Share Buttons */}
             <ShareButtons item={item} />
 
-            {/* Action Buttons */}
             <div className="flex flex-col gap-3">
               {!isOwner && user && (
                 <Link
@@ -160,6 +198,7 @@ const ItemDetail = () => {
                   <span>Send Message</span>
                 </Link>
               )}
+
               {user && (
                 <Link
                   to={`/matches/${item._id}`}
@@ -172,6 +211,7 @@ const ItemDetail = () => {
                   <span>View AI Matches</span>
                 </Link>
               )}
+
               <button
                 onClick={() => setShowQR(true)}
                 className="flex items-center justify-center gap-2 py-3 rounded-xl font-medium glass border transition-all"
@@ -182,6 +222,7 @@ const ItemDetail = () => {
                 <span>📱</span>
                 <span>Get QR Code</span>
               </button>
+
               {isOwner && item.status !== 'returned' && (
                 <button
                   onClick={async () => {
@@ -198,6 +239,7 @@ const ItemDetail = () => {
                   <span>Mark as Returned</span>
                 </button>
               )}
+
               {!user && (
                 <Link
                   to="/login"
@@ -211,8 +253,9 @@ const ItemDetail = () => {
         </div>
       </div>
 
-      {/* QR Modal */}
-      {showQR && <QRModal item={item} onClose={() => setShowQR(false)} />}
+      {showQR && (
+        <QRModal item={item} onClose={() => setShowQR(false)} />
+      )}
     </div>
   );
 };
