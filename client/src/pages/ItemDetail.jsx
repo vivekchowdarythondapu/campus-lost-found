@@ -50,8 +50,6 @@ const ItemDetail = () => {
     return styles[status] || '';
   };
 
-  const mapsKey = import.meta.env.VITE_GOOGLE_MAPS_KEY;
-
   return (
     <div className="min-h-screen dot-grid">
       <div className="max-w-4xl mx-auto px-4 py-10">
@@ -67,15 +65,11 @@ const ItemDetail = () => {
         </button>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-
           <div className="space-y-4">
             {item.image ? (
-              <img
-                src={item.image}
-                alt={item.title}
+              <img src={item.image} alt={item.title}
                 className="w-full rounded-2xl object-cover"
-                style={{ maxHeight: '400px' }}
-              />
+                style={{ maxHeight: '400px' }} />
             ) : (
               <div
                 className="w-full h-72 glass rounded-2xl border border-[var(--border)] flex items-center justify-center"
@@ -88,32 +82,6 @@ const ItemDetail = () => {
                 <span className="text-6xl opacity-30">
                   {item.type === 'lost' ? '?' : '📦'}
                 </span>
-              </div>
-            )}
-
-            {item.latitude && item.longitude && mapsKey && (
-              <div className="glass rounded-2xl border border-[var(--border)] overflow-hidden">
-                <iframe
-                  title="Item Location Map"
-                  width="100%"
-                  height="200"
-                  style={{ border: 0 }}
-                  loading="lazy"
-                  allowFullScreen
-                  src={`https://www.google.com/maps/embed/v1/place?key=${mapsKey}&q=${item.latitude},${item.longitude}&zoom=17`}
-                />
-                <div className="p-3 border-t border-[var(--border)]">
-                  <a
-                    href={`https://www.google.com/maps?q=${item.latitude},${item.longitude}`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="flex items-center gap-2 text-sm justify-center"
-                    style={{ color: 'var(--accent)' }}
-                  >
-                    <MapPin size={14} />
-                    Open in Google Maps
-                  </a>
-                </div>
               </div>
             )}
           </div>
@@ -152,9 +120,7 @@ const ItemDetail = () => {
                 <span style={{ color: 'var(--muted)' }}>Date:</span>
                 <span className="text-white">
                   {new Date(item.date).toLocaleDateString('en-IN', {
-                    year: 'numeric',
-                    month: 'long',
-                    day: 'numeric'
+                    year: 'numeric', month: 'long', day: 'numeric'
                   })}
                 </span>
               </div>

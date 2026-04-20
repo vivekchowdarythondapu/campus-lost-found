@@ -3,7 +3,6 @@ import { useNavigate } from 'react-router-dom';
 import API from '../api/axios';
 import toast from 'react-hot-toast';
 import { Upload, MapPin, Calendar, Tag, FileText, Type } from 'lucide-react';
-import LocationPicker from '../components/LocationPicker';
 
 const categories = [
   'Electronics', 'Books', 'Clothing', 'Accessories',
@@ -12,7 +11,6 @@ const categories = [
 ];
 
 const PostItem = () => {
-  const [mapLocation, setMapLocation] = useState(null);
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const [image, setImage] = useState(null);
@@ -34,10 +32,6 @@ const PostItem = () => {
       const formData = new FormData();
       Object.entries(form).forEach(([k, v]) => formData.append(k, v));
       if (image) formData.append('image', image);
-      if (mapLocation) {
-        formData.append('latitude', mapLocation.lat);
-        formData.append('longitude', mapLocation.lng);
-      }
       await API.post('/items', formData);
       toast.success('Item posted! AI is finding matches...');
       navigate('/my-items');
@@ -60,8 +54,6 @@ const PostItem = () => {
 
         <div className="glass rounded-2xl border border-[var(--border)] p-8">
           <form onSubmit={handleSubmit} className="space-y-6">
-
-            {/* Type Toggle */}
             <div>
               <label className="block text-sm font-medium mb-3"
                 style={{ color: 'var(--muted)' }}>Item Type</label>
@@ -87,7 +79,6 @@ const PostItem = () => {
               </div>
             </div>
 
-            {/* Title */}
             <div>
               <label className="block text-sm font-medium mb-2"
                 style={{ color: 'var(--muted)' }}>Title</label>
@@ -101,7 +92,6 @@ const PostItem = () => {
               </div>
             </div>
 
-            {/* Description */}
             <div>
               <label className="block text-sm font-medium mb-2"
                 style={{ color: 'var(--muted)' }}>Description</label>
@@ -115,7 +105,6 @@ const PostItem = () => {
               </div>
             </div>
 
-            {/* Category & Date */}
             <div className="grid grid-cols-2 gap-4">
               <div>
                 <label className="block text-sm font-medium mb-2"
@@ -144,11 +133,10 @@ const PostItem = () => {
               </div>
             </div>
 
-            {/* Location */}
             <div>
               <label className="block text-sm font-medium mb-2"
                 style={{ color: 'var(--muted)' }}>Location on Campus</label>
-              <div className="relative mb-2">
+              <div className="relative">
                 <MapPin size={15} className="absolute left-3 top-1/2 -translate-y-1/2"
                   style={{ color: 'var(--muted)' }} />
                 <input type="text" required value={form.location}
@@ -156,19 +144,8 @@ const PostItem = () => {
                   className="input-dark w-full pl-10 pr-4 py-3 rounded-xl text-sm"
                   placeholder="e.g. Library, Block A, Cafeteria" />
               </div>
-              {/* Map Picker */}
-              <LocationPicker
-                onLocationSelect={(loc) => {
-                  setMapLocation(loc);
-                  if (!form.location) {
-                    setForm(prev => ({ ...prev, location: loc.address }));
-                  }
-                }}
-                selectedLocation={mapLocation}
-              />
             </div>
 
-            {/* Image Upload */}
             <div>
               <label className="block text-sm font-medium mb-2"
                 style={{ color: 'var(--muted)' }}>
@@ -176,9 +153,7 @@ const PostItem = () => {
               </label>
               <label className="block cursor-pointer">
                 <div className="border-2 border-dashed rounded-xl p-6 text-center transition-all"
-                  style={{
-                    borderColor: preview ? 'var(--accent)' : 'var(--border)'
-                  }}>
+                  style={{ borderColor: preview ? 'var(--accent)' : 'var(--border)' }}>
                   {preview ? (
                     <img src={preview} alt="preview"
                       className="max-h-40 mx-auto rounded-lg object-cover" />
